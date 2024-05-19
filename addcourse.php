@@ -24,55 +24,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
-
-$sql = "SELECT id, course_name, course_level, description FROM course";
-$result = $conn->query($sql);
-
-if (isset($_GET['delete_id'])) {
-    // Get the delete_id from the URL
-    $delete_id = $_GET['delete_id'];
-
-    // Create a DELETE SQL query
-    $sql = "DELETE FROM course WHERE id = ?";
-
-    // Prepare the SQL statement
-    if ($stmt = $conn->prepare($sql)) {
-        // Bind the delete_id parameter to the SQL statement
-        $stmt->bind_param("i", $delete_id);
-
-        // Execute the statement
-        if ($stmt->execute()) {
-            // Success message (optional)
-           
-            // echo "Record deleted successfully";
-        } else {
-            // Error message
-            echo "Error deleting record: " . $stmt->error;
-        }
-
-        // Close the statement
-        $stmt->close();
-    } else {
-        // Error message
-        echo "Error preparing statement: " . $conn->error;
-    }
-
-    // Redirect to the same page to avoid resubmitting the form on refresh (optional)
-    header("Location: delete.php");
-    exit();
-}
-
-// Close the database connection
-$conn->close();
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         body {
@@ -171,7 +131,7 @@ $conn->close();
             font-style: italic;
             color: #777;
         }
-        </style>
+    </style>
 </head>
 <body>
 <div class="sidebar">
@@ -179,43 +139,57 @@ $conn->close();
     
     <a href="addcourse.php">Add Course</a>
     <a href="delete.php">Courses Detail</a>
-   
     <a href="logout.php">Logout</a>
 </div>
+
 <div class="main-content">
     <header>
         <div class="container">
             <div class="content">
-            <h1>Course List</h1>
+            <h1>Add Course</h1>
             </div>
         </div>
     </header>
-<div class="course-list">
-       
-        <table >
-            <tr>
-                <th>Course Name</th>
-                <th>Level</th>
-                <th>Description</th>
-                
-            </tr>
-            <?php
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>" . $row["course_name"] . "</td>";
-                    echo "<td>" . $row["course_level"] . "</td>";
-                    echo "<td>" . $row["description"] . "</td>";
-                    echo "<td><a href=delete.php?delete_id=" . $row["id"] . "'>Delete</a></td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='4'>No courses found.</td></tr>";
-            }
-            ?>
-        </table>
+
+    <div class="add-course-container">
+        <div class="add-course">
+            
+            <form id="add-course-form" action="delete.php" method="post">
+                <div class="form-group">
+                    <label for="course_name">Course Name:</label>
+                    <input type="text" id="course_name" name="course_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="course_level">Course Level:</label>
+                    <select id="course_level" name="course_level" required>
+                        <option value="" disabled selected>Select Level</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="course_description">Description:</label>
+                    <input type="text" id="course_description" name="course_description" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="course_image">Course Image:</label>
+                    <input type="file" id="course_image" name="course_image" accept="image/*" required>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Add Course" class="btn">
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-    
+
+   
+<footer>
+    <!-- Your footer content goes here -->
+</footer>
 </body>
 </html>
